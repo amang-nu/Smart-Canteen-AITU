@@ -1,0 +1,70 @@
+PRAGMA foreign_keys = ON;
+CREATE TABLE IF NOT EXISTS users (
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+ email TEXT NOT NULL UNIQUE COLLATE NOCASE,
+ first_name TEXT NOT NULL,
+ last_name TEXT NOT NULL,
+ student_group TEXT NOT NULL,
+ password_salt TEXT NOT NULL,
+ password_hash TEXT NOT NULL,
+ points INTEGER NOT NULL DEFAULT 0,
+ role TEXT NOT NULL DEFAULT 'student' CHECK (role IN ('student','admin')),
+ created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS sessions (
+ token_hash TEXT PRIMARY KEY,
+ user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+ expires_at INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS menu (
+ id INTEGER PRIMARY KEY,
+ name TEXT NOT NULL,
+ description TEXT NOT NULL,
+ price INTEGER NOT NULL CHECK(price >= 0),
+ category TEXT NOT NULL,
+ emoji TEXT NOT NULL DEFAULT '🍽️',
+ image TEXT NOT NULL DEFAULT '',
+ ingredients TEXT NOT NULL DEFAULT '',
+ vegetarian INTEGER NOT NULL DEFAULT 0,
+ discount_percent INTEGER NOT NULL DEFAULT 0,
+ remote TEXT NOT NULL DEFAULT ''
+);
+CREATE TABLE IF NOT EXISTS orders (
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+ code TEXT NOT NULL UNIQUE,
+ user_id INTEGER NOT NULL REFERENCES users(id),
+ pickup_time TEXT NOT NULL,
+ total_price INTEGER NOT NULL CHECK(total_price >= 0),
+ status TEXT NOT NULL DEFAULT 'Pending' CHECK (status IN ('Pending','Preparing','Ready','Completed','Cancelled')),
+ cancel_reason TEXT NOT NULL DEFAULT '',
+ payment_method TEXT NOT NULL DEFAULT 'QR',
+ pickup_at INTEGER,
+ points_spent INTEGER NOT NULL DEFAULT 0,
+ points_earned INTEGER NOT NULL DEFAULT 0,
+ refund_amount INTEGER NOT NULL DEFAULT 0,
+ fee_amount INTEGER NOT NULL DEFAULT 0,
+ settled INTEGER NOT NULL DEFAULT 0,
+ created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS order_items (
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+ order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+ menu_item_id INTEGER NOT NULL REFERENCES menu(id),
+ food_name TEXT NOT NULL,
+ quantity INTEGER NOT NULL CHECK(quantity > 0),
+ price INTEGER NOT NULL CHECK(price >= 0)
+);
+CREATE INDEX IF NOT EXISTS idx_orders_user ON orders(user_id, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS favorites (
+ user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+ dish_id INTEGER REFERENCES menu(id) ON DELETE CASCADE,
+ PRIMARY KEY(user_id,dish_id)
+);
+CREATE TABLE IF NOT EXISTS notifications (
+ id INTEGER PRIMARY KEY,
+ user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+ message TEXT NOT NULL,
+ seen INTEGER NOT NULL DEFAULT 0,
+ created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);

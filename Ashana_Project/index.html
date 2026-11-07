@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AITU Smart Canteen</title>
+    <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="features.css">
+</head>
+
+<body>
+
+    <!-- ========== LOGIN ========== -->
+    <div id="authScreen" class="auth-screen">
+        <div class="auth-card">
+            <div class="auth-logo" role="img" aria-label="AITU Smart Canteen logo">
+                <svg class="auth-logo-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 112" aria-hidden="true">
+                    <defs>
+                        <linearGradient id="canteenLogoBg" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stop-color="#245d43"/>
+                            <stop offset="100%" stop-color="#123b32"/>
+                        </linearGradient>
+                    </defs>
+                    <rect x="3" y="3" width="106" height="106" rx="28" fill="url(#canteenLogoBg)"/>
+                    <circle cx="56" cy="56" r="34" fill="#f3f7ed" opacity=".12"/>
+                    <path d="M39 25v21M48 25v21M57 25v21M39 35h18M48 46v38" fill="none" stroke="#f4f7ee" stroke-width="5" stroke-linecap="round"/>
+                    <path d="M75 25c-9 13-11 23-11 33v26M75 25c8 12 11 22 11 33H64" fill="none" stroke="#d7e8bc" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <text x="132" y="48" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="800" letter-spacing="1.2" fill="#173e34">AITU</text>
+                    <text x="133" y="76" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" letter-spacing="2.1" fill="#2f7d4b">SMART CANTEEN</text>
+                    <path d="M133 88h216" stroke="#d9e5d4" stroke-width="2" stroke-linecap="round"/>
+                    <text x="133" y="103" font-family="Arial, Helvetica, sans-serif" font-size="9" letter-spacing="1.1" fill="#718477">FRESH FOOD · SMART ORDERING</text>
+                </svg>
+            </div>
+            <h1>Welcome to AITU</h1>
+            <p>AITU Smart Canteen</p>
+
+            <div class="auth-tabs">
+                <button id="loginTab" class="auth-tab active" onclick="showAuthForm('login')">Sign in</button>
+                <button id="registerTab" class="auth-tab" onclick="showAuthForm('register')">Registration</button>
+            </div>
+
+            <div id="loginForm" class="auth-form active">
+                <input id="loginInput" class="auth-input" type="email"
+                       placeholder="Corporate email" autocomplete="username">
+                <input id="passwordInput" class="auth-input" type="password"
+                       placeholder="Password" autocomplete="current-password"
+                       onkeydown="if(event.key === 'Enter') login()">
+                <div id="authError" class="auth-error"></div>
+                <button class="primary-button full" onclick="login()">Sign in →</button>
+                <p id="rememberedUser" style="margin:14px 0 0;font-size:11px;color:#777;"></p>
+            </div>
+
+            <div id="registerForm" class="auth-form">
+                <input id="regEmail" class="auth-input" type="email"
+                       placeholder="Corporate email (@astanait.edu.kz)" autocomplete="email">
+                <input id="regFirstName" class="auth-input" type="text"
+                       placeholder="First name" autocomplete="given-name">
+                <input id="regLastName" class="auth-input" type="text"
+                       placeholder="Last name" autocomplete="family-name">
+                <input id="regGroup" class="auth-input" type="text"
+                       placeholder="Group (e.g. SE-2620)">
+                <input id="regPassword" class="auth-input" type="password"
+                       placeholder="Create password" autocomplete="new-password">
+                <input id="regPasswordConfirm" class="auth-input" type="password"
+                       placeholder="Confirm password" autocomplete="new-password"
+                       onkeydown="if(event.key === 'Enter') registerUser()">
+                <p class="auth-hint">Use your AITU corporate email to create a student account.</p>
+                <div id="registerError" class="auth-error"></div>
+                <div id="registerSuccess" class="auth-success"></div>
+                <button class="primary-button full" onclick="registerUser()">Create account →</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========== HEADER ========== -->
+    <header class="header">
+        <div class="logo">
+            <div class="header-brand" aria-label="AITU Smart Canteen">
+                <div class="brand-mark" aria-hidden="true">🍴</div>
+                <div>
+                    <strong>AITU SMART CANTEEN</strong>
+                    <small>STUDENT FOOD & PICKUP</small>
+                </div>
+            </div>
+        </div>
+
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#menu">Menu</a>
+            <a href="#orders">My Orders</a>
+            <a href="#profile">Profile</a>
+        </nav>
+
+        <div style="display:flex;align-items:center;gap:10px;">
+            <button class="theme-toggle" id="soundToggle" onclick="toggleSound()" aria-pressed="false">🔕 Sound: off</button>
+<button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle theme">🌙</button>
+            <button class="cart-button" onclick="openCart()">
+                🛒 Cart <span id="cartCount">0</span>
+            </button>
+        </div>
+    </header>
+
+
+    <section id="dishPage" class="dish-page" hidden></section>
+    <main>
+
+        <!-- ========== HERO ========== -->
+        <section id="home" class="hero">
+
+            <div class="hero-text">
+                <p class="tag">SMARTER WAY TO EAT</p>
+
+                <h1>
+                    Skip the queue.<br>
+                    <span>Enjoy your meal.</span>
+                </h1>
+
+                <p class="hero-description">
+                    Affordable meals, snacks and drinks for AITU students. Check today's menu, order your food in advance,
+                    choose a pickup time and collect it without waiting
+                    in the main queue.
+                </p>
+
+                <button class="primary-button" onclick="scrollToMenu()">
+                    Order Now →
+                </button>
+            </div>
+
+            <!-- Canteen status -->
+            <div class="crowd-card">
+
+                <div class="crowd-header">
+                    <h3>Canteen Status</h3>
+                    <span class="live">● LIVE</span>
+                </div>
+
+                <div class="people-number">
+                    <span id="peopleCount">67</span>
+                    <small>people inside</small>
+                </div>
+
+                <div class="crowd-level">
+                    <div class="status-dot" id="statusDot"></div>
+                    <div>
+                        <strong id="crowdText">Medium crowd</strong>
+                        <p>Estimated waiting time: <b id="waitTime">15 min</b></p>
+                    </div>
+                </div>
+
+                <div class="progress">
+                    <div id="crowdProgress"></div>
+                </div>
+
+                <p class="crowd-tip">
+                    💡 Tip: Order in advance to skip the main queue.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========== FEATURES ========== -->
+        <section class="features">
+
+            <div class="feature">
+                <div class="feature-icon">📋</div>
+                <div>
+                    <h3>See the menu</h3>
+                    <p>Know what's available before you arrive.</p>
+                </div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <div>
+                    <h3>Order ahead</h3>
+                    <p>Place your order in just a few clicks.</p>
+                </div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">🎟️</div>
+                <div>
+                    <h3>Quick pickup</h3>
+                    <p>Collect your food at the separate pickup point.</p>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- ========== MENU ========== -->
+        <section id="menu" class="menu-section">
+
+            <div class="section-heading">
+                <div>
+                    <p class="tag">AFFORDABLE CAMPUS FOOD</p>
+                    <h2>Good food. Student prices.</h2>
+                </div>
+
+                <div class="filters">
+                    <button class="filter active" onclick="filterMenu('all', this)">All</button>
+                    <button class="filter" onclick="filterMenu('main', this)">Main</button>
+                    <button class="filter" onclick="filterMenu('snack', this)">Snacks</button>
+                    <button class="filter" onclick="filterMenu('drink', this)">Drinks</button>
+                </div>
+            </div>
+
+            <input
+                id="searchInput"
+                class="search"
+                type="text"
+                placeholder="🔍 Search dishes..."
+                oninput="searchMenu()">
+
+            <div class="today-menu-box">
+                <div class="today-menu-head">
+                    <div>
+                        <p class="tag">TODAY'S MENU</p>
+                        <h3 id="todayMenuTitle">Today's selection</h3>
+                    </div>
+                    <button class="secondary-button" onclick="showAllMenu()">Show all dishes</button>
+                </div>
+                <div class="day-tabs" id="dayTabs">
+                    <button data-day="1" onclick="selectDay(1)">Mon</button>
+                    <button data-day="2" onclick="selectDay(2)">Tue</button>
+                    <button data-day="3" onclick="selectDay(3)">Wed</button>
+                    <button data-day="4" onclick="selectDay(4)">Thu</button>
+                    <button data-day="5" onclick="selectDay(5)">Fri</button>
+                    <button data-day="6" onclick="selectDay(6)">Sat</button>
+                    <button data-day="0" onclick="selectDay(0)">Sun</button>
+                </div>
+            </div>
+
+            <div class="favorite-tools"><button class="secondary-button" id="favoriteFilter" onclick="showFavorites()">♥ Favorites</button><span>Tap a dish to view its photo and description</span></div>
+            <div id="menuGrid" class="menu-grid"></div>
+
+        </section>
+
+
+        <!-- ========== HOW IT WORKS ========== -->
+        <section class="how-section">
+
+            <div class="section-heading center">
+                <p class="tag">HOW IT WORKS</p>
+                <h2>Four simple steps</h2>
+            </div>
+
+            <div class="steps">
+
+                <div class="step">
+                    <div class="step-number">01</div>
+                    <h3>Choose your meal</h3>
+                    <p>Browse today's menu and select what you want.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">02</div>
+                    <h3>Place your order</h3>
+                    <p>Add your food to the cart and choose a pickup time.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">03</div>
+                    <h3>Get your code</h3>
+                    <p>Receive a unique pickup code for your order.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">04</div>
+                    <h3>Pick it up</h3>
+                    <p>Go to the pickup point and skip the main queue.</p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========== ORDERS ========== -->
+        <section id="orders" class="orders-section">
+
+            <div class="section-heading">
+                <div>
+                    <p class="tag">MY ORDER</p>
+                    <h2>Current order</h2>
+                </div>
+            </div>
+
+            <div id="orderContainer" class="empty-order">
+                <div class="empty-icon">🧾</div>
+                <h3>No active order</h3>
+                <p>Your current order will appear here.</p>
+            </div>
+
+            <div class="archive-block">
+                <div class="section-heading archive-heading">
+                    <div>
+                        <p class="tag">ORDER HISTORY</p>
+                        <h2>Past orders</h2>
+                    </div>
+                    <span class="archive-count" id="archiveCount">0 orders</span>
+                </div>
+                <div id="orderArchive" class="order-archive">
+                    <div class="empty-order compact"><div class="empty-icon">🗂️</div><h3>No past orders yet</h3><p>Your completed and cancelled orders will appear here.</p></div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ========== PROFILE ========== -->
+        <section class="account-extras"><div id="loyaltyPanel"></div><div id="notificationPanel" aria-live="polite"></div></section>
+        <section id="profile" class="profile-section">
+            <div class="section-heading">
+                <div>
+                    <p class="tag">MY ACCOUNT</p>
+                    <h2>Profile</h2>
+                </div>
+            </div>
+            <div class="profile-grid">
+                <div class="profile-card">
+                    <div class="profile-avatar" id="profileAvatar">A</div>
+                    <div class="profile-main">
+                        <h3 id="profileName">Student</h3>
+                        <p id="profileEmail">student@astanait.edu.kz</p>
+                        <span class="group-pill" id="profileGroup">SE-2620</span>
+                    </div>
+                </div>
+                <div class="profile-details-card">
+                    <div><span>First name</span><strong id="profileFirstName">—</strong></div>
+                    <div><span>Last name</span><strong id="profileLastName">—</strong></div>
+                    <div><span>Corporate email</span><strong id="profileEmailDetail">—</strong></div>
+                    <div><span>Group</span><strong id="profileGroupDetail">—</strong></div>
+                </div>
+                <div class="profile-stats-card">
+                    <div><span>Total orders</span><strong id="profileOrderCount">0</strong></div>
+                    <div><span>Saved account</span><strong>✓ Yes</strong></div>
+                    <p>Your profile and order history are saved in this browser so you can sign in again later.</p>
+                </div>
+            </div>
+            <button class="logout-button" onclick="logoutUser()">Log out of profile</button>
+        </section>
+
+    <section id="admin" class="orders-section" style="background: #fff3cd; display: none;">
+            <div class="section-heading">
+                <div>
+                    <p class="tag">ТОЛЬКО ДЛЯ АДМИНИСТРАТОРА</p>
+                    <h2>Управление заказами</h2>
+                </div>
+                <label for="adminOrderPeriod">История заказов:
+                    <select id="adminOrderPeriod" class="secondary-button" onchange="loadAdminOrders()">
+                        <option value="all">Все заказы</option>
+                        <option value="day">За день (сегодня)</option>
+                        <option value="week">За неделю (7 дней)</option>
+                        <option value="month">За месяц (30 дней)</option>
+                    </select>
+                </label>
+            </div>
+            
+            <div id="discountPanel" class="extras-panel"><h3>Dish discounts</h3><p>Choose a dish and set a discount from 0 to 90%. Set 0 to remove it.</p><label>Dish <select id="discountDish"></select></label><label>Discount % <input id="discountPercent" type="number" min="0" max="90" step="1" value="0"></label><button class="primary-button" onclick="saveDiscount()">Save discount</button><p id="discountFeedback" role="status"></p></div>
+            <div id="analysisPanel" style="background:white;padding:24px;border-radius:14px;margin-top:20px">Loading analysis...</div>
+            <div id="adminOrdersList" style="margin-top: 20px;">
+                <!-- Сюда будут загружаться заказы -->
+            </div>
+
+            <div class="section-heading" style="margin-top: 50px;">
+                <div>
+                    <p class="tag">БАЗА ПОЛЬЗОВАТЕЛЕЙ</p>
+                    <h2>Кто зарегистрировался</h2>
+                </div>
+            </div>
+            <div id="adminUsersList" style="background: white; padding: 20px; border-radius: 10px;">
+                <!-- Сюда загрузятся юзеры -->
+            </div>
+        </section>
+</main>
+
+
+    <!-- ========== FOOD REVIEW MODAL ========== -->
+    <div id="reviewModal" class="modal">
+        <div class="modal-content review-modal-content">
+            <div class="modal-header">
+                <div><p class="tag">STUDENT FEEDBACK</p><h2 id="reviewDishName">Food reviews</h2></div>
+                <button class="close-button" onclick="closeReviewModal()">×</button>
+            </div>
+            <div id="reviewExistingList" class="review-list"></div>
+            <div style="margin-top:22px;padding-top:18px;border-top:1px solid #e8ece5">
+                <strong>Share your experience</strong>
+                <p style="font-size:12px;color:#7b817a;margin-top:5px">Rate this dish and tell other students what you think.</p>
+                <div class="rating-picker" id="reviewRatingPicker" aria-label="Choose a rating">
+                    <button type="button" onclick="setReviewRating(1)">★</button><button type="button" onclick="setReviewRating(2)">★</button><button type="button" onclick="setReviewRating(3)">★</button><button type="button" onclick="setReviewRating(4)">★</button><button type="button" onclick="setReviewRating(5)">★</button>
+                </div>
+                <textarea id="reviewComment" placeholder="Write your review..."></textarea>
+                <label class="review-photo-input">📷 Attach a food photo (optional)
+                    <input id="reviewPhoto" type="file" accept="image/*" onchange="previewReviewPhoto(event)" style="display:block;margin-top:8px">
+                </label>
+                <img id="reviewPhotoPreview" alt="Review photo preview">
+                <button class="primary-button full" onclick="submitFoodReview()">Publish review</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== CART MODAL ========== -->
+    <div id="cartModal" class="modal">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <div>
+                    <p class="tag">YOUR CART</p>
+                    <h2>Your order</h2>
+                </div>
+
+                <button class="close-button" onclick="closeCart()">×</button>
+            </div>
+
+            <div id="cartItems"></div>
+
+            <div id="cartFooter" class="cart-footer">
+
+                <div class="total">
+                    <span>Total</span>
+                    <strong id="cartTotal">0 ₸</strong>
+                </div>
+
+                <div class="pickup">
+                    <label for="pickupTime">Choose pickup time</label>
+
+                    <label for="pickupDate">Pickup date (Astana, UTC+5)</label><input id="pickupDate" type="date" onchange="populatePickupTimes()">
+                    <select id="pickupTime" aria-label="Choose a food pickup time">
+                        <!-- Pickup slots are generated by JavaScript from 09:00 to 18:00. -->
+                    </select>
+                    <small class="pickup-time-hint">Every 10 minutes, 09:00–18:00. Book at least 10 minutes ahead.</small>
+                </div>
+
+                <div class="payment-options">
+                    <strong>QR payment · Demo</strong>
+                    <p>No real money is charged. The next screen shows a demonstration QR.</p>
+                    <label><input id="usePoints" type="checkbox" onchange="updateCheckout()"> Use points (up to 30%)</label>
+                    <p id="pointsSummary"></p>
+                    <p class="payment-note">If you do not collect your order within 20 minutes after the pickup window ends, it is cancelled. Demo refund: 95%; retention: 5%. Customer cancellations also receive a 95% demo refund with a 5% retention. Used points are restored.</p>
+                </div>
+                <button class="primary-button full" onclick="placeOrder()">
+                    Continue & Place Order
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========== SUCCESS MODAL ========== -->
+    <div id="successModal" class="modal">
+
+        <div class="success-content">
+
+            <div class="success-icon">✓</div>
+
+            <p class="tag">ORDER CONFIRMED</p>
+
+            <h2>Your order is on its way!</h2>
+
+            <p>Your pickup code is:</p>
+
+            <div class="pickup-code" id="pickupCode">A247</div>
+
+            <div class="pickup-info">
+                <span>📍 Pickup Point 1</span>
+                <span>⏰ <span id="confirmedTime"></span></span>
+            </div>
+            <div id="confirmedPayment" class="payment-status">Payment: Card</div>
+
+            <button class="primary-button full" onclick="closeSuccess()">
+                View My Order
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========== TOAST ========== -->
+    <div id="toast" class="toast"></div>
+
+
+    <!-- ========== FOOTER ========== -->
+    <footer>
+        <div>
+            <strong>AITU SMART CANTEEN</strong>
+            <p>Making student life easier, one meal at a time.</p>
+        </div>
+
+        <div>
+            <p>© 2026 AITU Smart Canteen</p>
+            <p class="footer-authors">
+                Amina Polatkhan<br>
+                Amangali Nuraiym<br>
+                Togzhan Kabash
+            </p>
+        </div>
+    </footer>
+
+
+    <div id="qrModal" class="modal"><div class="modal-content qr-content"><button class="close-modal" onclick="document.getElementById('qrModal').classList.remove('show')" aria-label="Close payment">×</button><h2>Demo QR payment</h2><p>This QR is for demonstration only.</p><div id="demoQR" aria-label="Non-working demonstration QR"></div><h3 id="qrTotal"></h3><p>No bank app or real transfer required.<br>Continue simulates successful payment.</p><button id="qrContinue" class="primary-button full" onclick="confirmQR()">Continue</button><p id="qrFeedback" role="status"></p></div></div>
+    <script src="script.js"></script><script src="features.js"></script>
+
+</body>
+
+</html>
